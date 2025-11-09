@@ -70,7 +70,7 @@
 }
 
 .shop-rank span {
-    color: #B15E2C;
+    color: #3a8ee6;
     font-size: 11px;
     background: linear-gradient(
             -248deg, #FFEBCF 2%, #FFECDD 61%);
@@ -141,7 +141,7 @@
 .voucher-icon {
     display: inline-block;
     line-height: 16px;
-    background-color: #f5a966;
+    background-color: #3a8ee6;
     color: white;
     padding: 0 4px 2px 4px;
 }
@@ -240,7 +240,7 @@
 }
 .seckill-stock span{
     background-color: #fce5e5;
-    color: rgb(240, 51, 51);
+    color: rgb(00, 100, 250);
 }
 .copyright {
     color: #d1d1d1;
@@ -303,7 +303,7 @@
     font-size: 10px;
     padding: 0 10px;
     border-radius: 8px;
-    background-color: #f7b253;
+    background-color: #3a8ee6;
     color: white;
 }
 .comment-images {

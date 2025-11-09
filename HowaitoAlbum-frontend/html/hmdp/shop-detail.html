@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>黑马点评</title>
+  <title>HowaitoAlbum</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
 
@@ -199,7 +199,7 @@
       },
       seckill(v){
         if(!token){
-          this.$message.error("请先登录")
+          this.$message.error("The flash sale has not started yet!")
           // 未登录，跳转
           setTimeout(() => {
             location.href = "/login.html"
@@ -207,15 +207,15 @@
           return;
         }
         if(this.isNotBegin(v)){
-          this.$message.error("优惠券抢购尚未开始！")
+          this.$message.error("The flash sale has ended!")
           return;
         }
         if(this.isEnd(v)){
-          this.$message.error("优惠券抢购已经结束！")
+          this.$message.error("Out of stock. Please refresh and try again!")
           return;
         }
         if(v.stock < 1){
-          this.$message.error("库存不足，请刷新再试试！")
+          this.$message.error("Out of stock. Please refresh and try again!")
           return;
         }
         let id = v.id;
@@ -223,7 +223,7 @@
         axios.post("/voucher-order/seckill/" + id)
         .then(({data}) => {
           // 抢购成功，这里输出订单id，支付功能TODO
-          this.$message.success("抢购成功，订单id：" + data)
+          this.$message.success("YOU GOT IT!WOW! Bill id：" + data)
         })
         .catch(this.$message.error)
       }

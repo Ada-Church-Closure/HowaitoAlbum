@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>黑马点评</title>
+  <title>HowaitoAlbum</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
 
@@ -48,7 +48,7 @@
       </div>
       <div style="width: 20%">
         <div class="logout-btn" @click="follow" v-show="!user || user.id !== blog.userId ">
-          {{followed ? '取消关注' : '关注'}}
+          {{followed ? 'Unfollow' : 'Follow'}}
         </div>
       </div>
 
@@ -66,7 +66,7 @@
               v-model="shop.score/10">
           </el-rate>
         </div>
-          <div class="shop-avg">￥{{shop.avgPrice}}/人</div>
+          <div class="shop-avg">￥{{shop.avgPrice}}/OnePerson</div>
       </div>
     </div>
     <div class="zan-box">
@@ -79,13 +79,13 @@
         <div class="user-icon-mini" v-for="u in likes" :key="u.id">
           <img :src="u.icon || '/imgs/icons/default-icon.png'" alt="">
         </div>
-        <div style="margin-left:10px;text-align: center;line-height: 24px;">{{blog.liked}}人点赞</div>
+        <div style="margin-left:10px;text-align: center;line-height: 24px;">{{blog.liked}}persons likes</div>
       </div>
     </div>
     <div class="blog-divider"></div>
     <div class="blog-comments">
       <div class="comments-head">
-        <div>网友评价 <span>（119）</span></div>
+        <div>Comments <span>（119）</span></div>
         <div><i class="el-icon-arrow-right"></i></div>
       </div>
       <div class="comment-list">
@@ -96,9 +96,9 @@
                 alt="">
           </div>
           <div class="comment-info">
-            <div class="comment-user">叶小乙 <span>Lv5</span></div>
+            <div class="comment-user">Misato <span>Lv5</span></div>
             <div style="display: flex;">
-              打分
+              Scores
               <el-rate disabled v-model="4.5"></el-rate>
             </div>
             <div style="padding: 5px 0; font-size: 14px">

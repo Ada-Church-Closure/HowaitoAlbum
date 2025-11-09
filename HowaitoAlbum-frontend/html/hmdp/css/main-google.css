@@ -20,7 +20,7 @@ body,
 
 .el-tabs__active-bar {
     height: 4px;
-    background-image: linear-gradient(to right, #1A73E8, #f5b9a2);
+    background-image: linear-gradient(to right, #1A73E8, #3a8ee6);
 }
 
 .foot {

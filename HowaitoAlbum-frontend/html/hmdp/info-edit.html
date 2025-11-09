@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>黑马点评</title>
+  <title>HowaitoAlbum</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
   <link href="./css/main.css" rel="stylesheet">
@@ -17,12 +17,12 @@
 <div id="app">
   <div class="header">
     <div class="header-back-btn" @click="goBack" ><i class="el-icon-arrow-left"></i></div>
-    <div class="header-title">资料编辑&nbsp;&nbsp;&nbsp;</div>
+    <div class="header-title">Edit Profiles&nbsp;&nbsp;&nbsp;</div>
   </div>
   <div class="edit-container">
     <div class="info-box">
       <div class="info-item">
-        <div class="info-label">头像</div>
+        <div class="info-label">Icon</div>
         <div class="info-btn">
           <img width="35" :src="user.icon || '/imgs/icons/default-icon.png'" alt="">
           <div><i class="el-icon-arrow-right"></i></div>
@@ -30,7 +30,7 @@
       </div>
       <div class="divider"></div>
       <div class="info-item">
-        <div class="info-label">昵称</div>
+        <div class="info-label">NickName</div>
         <div class="info-btn">
           <div>{{user.nickName}}</div>
           <div>
@@ -40,9 +40,9 @@
       </div>
       <div class="divider"></div>
       <div class="info-item">
-        <div class="info-label">个人介绍</div>
+        <div class="info-label">About Me</div>
         <div class="info-btn">
-          <div style="overflow: hidden; width: 150px;text-align: right">{{info.introduce || '介绍一下自己'}}</div>
+          <div style="overflow: hidden; width: 150px;text-align: right">{{info.introduce || 'Introduce Yourself'}}</div>
           <div>
             <i class="el-icon-arrow-right"></i>
           </div>
@@ -51,25 +51,25 @@
     </div>
     <div class="info-box">
       <div class="info-item">
-        <div class="info-label">性别</div>
+        <div class="info-label">Gender</div>
         <div class="info-btn">
-          <div>{{info.gender || '选择'}}</div>
+          <div>{{info.gender || 'Choose'}}</div>
           <div><i class="el-icon-arrow-right"></i></div>
         </div>
       </div>
       <div class="divider"></div>
       <div class="info-item">
-        <div class="info-label">城市</div>
+        <div class="info-label">City</div>
         <div class="info-btn">
-          <div>{{info.city || '选择'}}</div>
+          <div>{{info.city || 'Choose'}}</div>
           <div><i class="el-icon-arrow-right"></i></div>
         </div>
       </div>
       <div class="divider"></div>
       <div class="info-item">
-        <div class="info-label">生日</div>
+        <div class="info-label">Birthday</div>
         <div class="info-btn">
-          <div>{{info.birthday || '添加'}}</div>
+          <div>{{info.birthday || 'Add'}}</div>
           <div><i class="el-icon-arrow-right"></i></div>
         </div>
       </div>
@@ -77,17 +77,17 @@
 
     <div class="info-box">
       <div class="info-item">
-        <div class="info-label">我的积分</div>
+        <div class="info-label">My Level</div>
         <div class="info-btn">
-          <div>查看积分</div>
+          <div>Check the points</div>
           <div><i class="el-icon-arrow-right"></i></div>
         </div>
       </div>
       <div class="divider"></div>
       <div class="info-item">
-        <div class="info-label">会员等级</div>
+        <div class="info-label">Vip Level</div>
         <div class="info-btn">
-          <div><a href="javascript:void(0)">成为VIP尊享特权</a></div>
+          <div><a href="javascript:void(0)">Go VIP: Unlock Exclusive Privileges</a></div>
           <div><i class="el-icon-arrow-right"></i></div>
         </div>
       </div>

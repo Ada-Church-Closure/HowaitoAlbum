@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>黑马点评</title>
+  <title>HowaitoAlbum</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
   <link href="./css/main.css" rel="stylesheet">
@@ -42,16 +42,16 @@
       <span>杭州</span>
     </div>
     <div class="logout-btn" @click="follow" style="text-align: center">
-      {{followed ? "取消关注" : "关注"}}
+      {{followed ? "Unfollow" : "Follow"}}
     </div>
   </div>
   <div class="introduce">
     <span v-if="info.introduce"></span>
-    <span v-else>这个人很懒，什么都没有留下</span>
+    <span v-else>This fan is too busy watching anime to write a bio!</span>
   </div>
   <div class="content">
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="笔记" name="1">
+      <el-tab-pane label="Reviews" name="1">
         <div v-for="b in blogs" :key="b.id" class="blog-item">
           <div class="blog-img"><img :src="b.images.split(',')[0]" alt=""></div>
           <div class="blog-info">
@@ -61,8 +61,8 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="共同关注" name="2">
-        <div>你们都关注了：</div>
+      <el-tab-pane label="Mutuals" name="2">
+        <div>You both Followed:</div>
         <div class="follow-info" v-for="u in commonFollows" :key="u.id">
           <div class="follow-info-icon" @click="toOtherInfo(u.id)">
             <img :src="u.icon || '/imgs/icons/default-icon.png'" alt="">
@@ -71,7 +71,7 @@
             <div class="name">{{u.nickName}}</div>
           </div>
           <div class="follow-info-btn" @click="toOtherInfo(u.id)">
-              去主页看看
+            View Profile
           </div>
         </div>
       </el-tab-pane>

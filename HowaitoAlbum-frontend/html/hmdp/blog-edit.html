@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>黑马点评</title>
+  <title>HowaitoAlbum</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
   <link href="./css/main.css" rel="stylesheet">
@@ -16,17 +16,17 @@
 <body>
 <div id="app">
   <div class="header">
-    <div class="header-cancel-btn" @click="goBack">取消</div>
-    <div class="header-title">&nbsp;&nbsp;发笔记<i class="el-icon-info"></i></div>
+    <div class="header-cancel-btn" @click="goBack">Cancel</div>
+    <div class="header-title">&nbsp;&nbsp;Notes<i class="el-icon-info"></i></div>
     <div class="header-commit">
-      <div class="header-commit-btn" @click="submitBlog">发布</div>
+      <div class="header-commit-btn" @click="submitBlog">Publish</div>
     </div>
   </div>
   <div class="upload-box">
     <input type="file" @change="fileSelected" name="file" ref="fileInput" style="display: none">
     <div class="upload-btn" @click="openFileDialog">
       <i class="el-icon-camera"></i>
-      <div style="font-size: 12px;line-height: 12px">上传照片</div>
+      <div style="font-size: 12px;line-height: 12px">Upload</div>
     </div>
     <div class="pic-list">
       <div class="pic-box" v-for="(f,i) in fileList" :key="i">
@@ -36,29 +36,30 @@
     </div>
   </div>
   <div class="blog-title">
-    <input v-model="params.title" type="text" placeholder="填写标题更容易上首页哦~">
+    <input v-model="params.title" type="text" placeholder="Add a title to increase visibility on homepage!">
   </div>
   <div class="blog-content">
-    <textarea v-model="params.content" placeholder="最近打卡了什么地方，有什么新奇体验呢？"></textarea>
+    <textarea v-model="params.content" placeholder="What interesting anime have you watched recently?"
+    ></textarea>
   </div>
   <div class="divider"></div>
   <div class="blog-shop" @click="showDialog=true">
-    <div class="shop-left">关联商户</div>
+    <div class="shop-left">Associated Merchant</div>
     <div v-if="selectedShop.name">{{selectedShop.name}}</div>
-    <div v-else>去选择&nbsp;<i class="el-icon-arrow-right"></i></div>
+    <div v-else>Go to choose!&nbsp;<i class="el-icon-arrow-right"></i></div>
   </div>
   <div class="mask" v-show="showDialog" @click="showDialog=false"></div>
 
   <transition name="el-zoom-in-bottom">
     <div class="shop-dialog" v-show="showDialog">
       <div class="blog-shop">
-        <div class="shop-left">关联商户</div>
+        <div class="shop-left">Associated Merchant</div>
       </div>
       <div class="search-bar">
         <div class="city-select">杭州 <i class="el-icon-arrow-down"></i></div>
         <div class="search-input">
           <i class="el-icon-search" @click="queryShops"></i>
-          <input v-model="shopName" type="text" placeholder="搜索商户名称">
+          <input v-model="shopName" type="text" placeholder="Find merchant by name">
         </div>
       </div>
       <div class="shop-list">

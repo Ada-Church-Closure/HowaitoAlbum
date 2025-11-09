@@ -3,18 +3,18 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>黑马点评</title>
+  <title>HowaitoAlbum</title>
   <link href="./css/login.css" rel="stylesheet">
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
 
   <style type="text/css">
       .el-radio__input.is-checked .el-radio__inner {
-          border-color: #F63;
-          background: #F63;
+          border-color: #3a8ee6;
+          background: #3a8ee6;
       }
       .el-input__inner:focus {
-          border: 1px solid #F63;
+          border: 1px solid #3a8ee6;
       }
   </style>
 </head>
@@ -23,29 +23,29 @@
   <div class="login-container">
     <div class="header">
       <div class="header-back-btn" @click="goBack"><i class="el-icon-arrow-left"></i></div>
-      <div class="header-title">密码登录&nbsp;&nbsp;&nbsp;</div>
+      <div class="header-title">Password Login&nbsp;&nbsp;&nbsp;</div>
     </div>
     <div class="content">
       <div class="login-form">
-        <el-input placeholder="请输入手机号" v-model="form.phone">
+        <el-input placeholder="Enter Phone Number" v-model="form.phone">
         </el-input>
         <div style="height: 5px"></div>
-        <el-input placeholder="请输入密码" v-model="form.password">
+        <el-input placeholder="Enter Password" v-model="form.password">
         </el-input>
-        <div style="text-align: center; color: #8c939d;margin: 5px 0"><a href="javascript:void(0)">忘记密码</a></div>
-        <el-button @click="login" style="width: 100%; background-color:#f63; color: #fff;">登录</el-button>
-        <div style="text-align: right; color:#333333; margin: 5px 0"><a href="/login.html">验证码登录</a></div>
+        <div style="text-align: center; color: #8c939d;margin: 5px 0"><a href="javascript:void(0)">Forgot Password</a></div>
+        <el-button @click="login" style="width: 100%; background-color:#f63; color: #fff;">Login</el-button>
+        <div style="text-align: right; color:#333333; margin: 5px 0"><a href="/login.html">Login with Code</a></div>
       </div>
       <div class="login-radio">
         <div>
           <input type="radio" name="readed" v-model="radio" value="1">
           <label for="readed"></label>
         </div>
-        <div>我已阅读并同意
+        <div>I have read and agree to the
           <a href="javascript:void(0)">
-          《黑马点评用户服务协议》</a>、
-          <a href="javascript:void(0)">《隐私政策》</a>
-          等，接受免除或者限制责任、诉讼管辖约定等粗体标示条款
+              "Howaito-Album" User Service Agreement</a>、
+          <a href="javascript:void(0)">Privacy Policy</a>
+            and others. I accept the **bolded clauses regarding exemption or limitation of liability, jurisdiction for lawsuits, etc.**
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@
     methods: {
       login(){
         if(!this.radio){
-          this.$message.error("请先确认阅读用户协议！");
+          this.$message.error("Please agree to the terms to continue.");
           return;
         }
         axios.post("/user/login", this.form)

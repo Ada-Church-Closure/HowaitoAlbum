@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>黑马点评</title>
+  <title>HowaitoAlbum</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
   <link href="./css/main.css" rel="stylesheet">
@@ -20,34 +20,34 @@
     <div class="login-container">
       <div class="header">
         <div class="header-back-btn" @click="goBack"><i class="el-icon-arrow-left"></i></div>
-        <div class="header-title">手机号码快捷登录&nbsp;&nbsp;&nbsp;</div>
+        <div class="header-title">Login via Mobile Number&nbsp;&nbsp;&nbsp;</div>
       </div>
       <div class="content">
         <div class="login-form">
           <div style="display: flex; justify-content: space-between">
-            <el-input style="width: 60%" placeholder="请输入手机号" v-model="form.phone">
+            <el-input style="width: 60%" placeholder="Please input your Number..." v-model="form.phone">
             </el-input>
             <el-button style="width: 38%" @click="sendCode" type="success"
               :disabled="disabled">{{codeBtnMsg}}</el-button>
           </div>
 
           <div style="height: 5px"></div>
-          <el-input placeholder="请输入验证码" v-model="form.code">
+          <el-input placeholder="Please input Verification Code" v-model="form.code">
           </el-input>
-          <div style="text-align: center; color: #8c939d;margin: 5px 0">未注册的手机号码验证后自动创建账户</div>
-          <el-button @click="login" style="width: 100%; background-color:#5c9ef8; color: #fff;">登录</el-button>
-          <div style="text-align: right; color:#333333; margin: 5px 0"><a href="/login2.html">密码登录</a></div>
+          <div style="text-align: center; color: #8c939d;margin: 5px 0">If you don't have an account, one will be created automatically after verification.</div>
+          <el-button @click="login" style="width: 100%; background-color:#5c9ef8; color: #fff;">Login</el-button>
+          <div style="text-align: right; color:#333333; margin: 5px 0"><a href="/login2.html">Login with Password</a></div>
         </div>
         <div class="login-radio">
           <div>
             <input type="radio" name="readed" v-model="radio" value="1">
             <label for="readed"></label>
           </div>
-          <div>我已阅读并同意
+          <div>I have read and agree to the
             <a href="javascript:void(0)">
-              《黑马点评用户服务协议》</a>、
-            <a href="javascript:void(0)">《隐私政策》</a>
-            等，接受免除或者限制责任、诉讼管辖约定等粗体标示条款
+                "Howaito-Album" User Service Agreement</a>、
+            <a href="javascript:void(0)">Privacy Policy</a>
+              and others. I accept the **bolded clauses regarding exemption or limitation of liability, jurisdiction for lawsuits, etc.**
           </div>
         </div>
       </div>
@@ -66,18 +66,18 @@
       data: {
         radio: "",
         disabled: false, // 发送短信按钮
-        codeBtnMsg: "发送验证码", // 发送短信按钮提示
+        codeBtnMsg: "Get Verification Code", // 发送短信按钮提示
         form: {
         }
       },
       methods: {
         login() {
           if (!this.radio) {
-            this.$message.error("请先确认阅读用户协议！");
+            this.$message.error("Please first confirm that you have read the User Agreement!");
             return
           }
           if (!this.form.phone || !this.form.code) {
-            this.$message.error("手机号和验证码不能为空！");
+            this.$message.error("Phone number and verification code cannot be empty!");
             return
           }
           axios.post("/user/login", this.form)
@@ -96,7 +96,7 @@
         },
         sendCode() {
           if (!this.form.phone) {
-            this.$message.error("手机号不能为空");
+            this.$message.error("Phone number and verification code cannot be empty!");
             return;
           }
           // 发送验证码
@@ -110,12 +110,12 @@
           this.disabled = true;
           // 按钮倒计时
           let i = 60;
-          this.codeBtnMsg = (i--) + '秒后可重发'
-          let taskId = setInterval(() => this.codeBtnMsg = (i--) + '秒后可重发', 1000);
+          this.codeBtnMsg = (i--) + 's to resend'
+          let taskId = setInterval(() => this.codeBtnMsg = (i--) + 's to resend', 1000);
           setTimeout(() => {
             this.disabled = false;
             clearInterval(taskId);
-            this.codeBtnMsg = "发送验证码";
+            this.codeBtnMsg = "Get Verification Code";
           }, 59000)
         }
       }
