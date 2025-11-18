@@ -59,9 +59,9 @@
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="Notes" name="1">
         <div v-for="b in blogs" :key="b.id" class="blog-item">
-          <div class="blog-img"><img :src="b.images.split(',')[0]" alt=""></div>
+          <div class="blog-img" @click="toBlogDetail(b)"><img :src="b.images.split(',')[0]" alt=""></div>
           <div class="blog-info">
-            <div class="blog-title">{{b.title}}</div>
+            <div class="blog-title" @click="toBlogDetail(b)">{{b.title}}</div>
             <div class="blog-liked"><img src="/imgs/thumbup.png" alt=""> {{b.liked}}</div>
             <div class="blog-comments"><i class="el-icon-chat-dot-round"></i> {{b.comments}}</div>
           </div>
@@ -233,6 +233,10 @@
         } else {
           this.isReachBottom = false
         }
+      },
+      toBlogDetail(b) {
+        // 跳转到博客详情页
+        location.href = "/blog-detail.html?id=" + b.id
       }
     },
 

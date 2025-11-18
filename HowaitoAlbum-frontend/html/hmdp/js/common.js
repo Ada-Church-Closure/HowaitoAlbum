@@ -103,3 +103,21 @@ const util = {
     }
   }
 }
+
+// Provide a global fallback for common navigation methods to avoid undefined handler errors
+// This ensures templates using @click="toBlogDetail(b)" work even if the page forgot to declare the method
+if (typeof Vue !== 'undefined' && Vue && typeof Vue.mixin === 'function') {
+  Vue.mixin({
+    methods: {
+      toBlogDetail(item) {
+        try {
+          const id = (item && item.id) ? item.id : item;
+          if (!id) return;
+          location.href = "/blog-detail.html?id=" + id;
+        } catch (e) {
+          // no-op
+        }
+      }
+    }
+  });
+}

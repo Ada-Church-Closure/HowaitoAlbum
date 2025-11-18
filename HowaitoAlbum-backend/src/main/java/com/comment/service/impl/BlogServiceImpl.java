@@ -160,14 +160,11 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
         for(Follow follow : followers){
             // 拿到粉丝的Id
             Long userId = follow.getUserId();
-            // 推送blog的id进去
+            // 推送blog的id到粉丝的收件箱（ZSet，score 为时间戳）
             String key = FEED_KEY + userId;
             stringRedisTemplate.opsForZSet().add(key, blog.getId().toString(), System.currentTimeMillis());
-            return Result.ok(blog.getId());
         }
-
-
-        // 返回id
+        // 返回id（注意：不能在循环中提前 return，否则只给第一个粉丝推送）
         return Result.ok(blog.getId());
     }
 

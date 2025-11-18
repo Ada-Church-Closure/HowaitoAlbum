@@ -7,6 +7,7 @@
   <link href="./css/login.css" rel="stylesheet">
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
+  <link href="./css/main.css" rel="stylesheet">
 
   <style type="text/css">
       .el-radio__input.is-checked .el-radio__inner {
@@ -32,8 +33,8 @@
         <div style="height: 5px"></div>
         <el-input placeholder="Enter Password" v-model="form.password">
         </el-input>
-        <div style="text-align: center; color: #8c939d;margin: 5px 0"><a href="javascript:void(0)">Forgot Password</a></div>
-        <el-button @click="login" style="width: 100%; background-color:#f63; color: #fff;">Login</el-button>
+        <div style="text-align: center; color: #8c939d;margin: 5px 0"><a href="/login.html">Forgot Password</a></div>
+        <el-button @click="login" type="primary" style="width: 100%;">Login</el-button>
         <div style="text-align: right; color:#333333; margin: 5px 0"><a href="/login.html">Login with Code</a></div>
       </div>
       <div class="login-radio">
@@ -42,9 +43,9 @@
           <label for="readed"></label>
         </div>
         <div>I have read and agree to the
-          <a href="javascript:void(0)">
+          <a href="https://ada-church-closure.github.io/author/">
               "Howaito-Album" User Service Agreement</a>、
-          <a href="javascript:void(0)">Privacy Policy</a>
+          <a href="https://ada-church-closure.github.io/author/">Privacy Policy</a>
             and others. I accept the **bolded clauses regarding exemption or limitation of liability, jurisdiction for lawsuits, etc.**
         </div>
       </div>

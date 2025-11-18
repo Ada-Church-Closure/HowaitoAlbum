@@ -84,6 +84,8 @@
     data: {
       util,
       isReachBottom: false,
+      loading: false, // 防重入加载
+      idMap: {}, // 已存在门店id集合，用于去重
       types: [], // 类型列表
       shops: [], // 商店列表
       typeName: "",
@@ -116,6 +118,9 @@
           })
       },
       queryShops() {
+        // 防止并发重复加载
+        if (this.loading) return;
+        this.loading = true;
         axios.get("/shop/of/type", {
             params: this.params
           })
@@ -124,18 +129,33 @@
               return
             }
             data.forEach(s => s.images = s.images.split(',')[0]);
-            this.shops = this.shops.concat(data);
+            // 前端去重：过滤已存在的 id
+            const appended = [];
+            data.forEach(s => {
+              if (!this.idMap[s.id]) {
+                this.idMap[s.id] = true;
+                appended.push(s);
+              }
+            });
+            this.shops = this.shops.concat(appended);
           })
           .catch(err => {
             console.log(err);
             this.$message.error(err)
+          })
+          .finally(() => {
+            this.loading = false;
           })
       },
       handleCommand(t) {
         location.href = "/shop-list.html?type="+t.id+"&name="+t.name;
       },
       sortAndQuery(sortBy) {
+        // 更换排序时重置分页与结果，避免重复
         this.params.sortBy = sortBy;
+        this.params.current = 1;
+        this.shops = [];
+        this.idMap = {};
         this.queryShops();
       },
       goBack() {

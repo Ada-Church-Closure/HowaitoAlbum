@@ -8,6 +8,7 @@
   <!-- 引入样式 -->
   <link rel="stylesheet" href="./css/element.css">
   <link href="./css/main.css" rel="stylesheet">
+  <link href="./css/main.css" rel="stylesheet">
   <link href="./css/login.css" rel="stylesheet">
 
   <style type="text/css">
@@ -35,7 +36,7 @@
           <el-input placeholder="Please input Verification Code" v-model="form.code">
           </el-input>
           <div style="text-align: center; color: #8c939d;margin: 5px 0">If you don't have an account, one will be created automatically after verification.</div>
-          <el-button @click="login" style="width: 100%; background-color:#5c9ef8; color: #fff;">Login</el-button>
+          <el-button @click="login" type="primary" style="width: 100%;">Login</el-button>
           <div style="text-align: right; color:#333333; margin: 5px 0"><a href="/login2.html">Login with Password</a></div>
         </div>
         <div class="login-radio">
@@ -95,28 +96,36 @@
           history.back();
         },
         sendCode() {
-          if (!this.form.phone) {
-            this.$message.error("Phone number and verification code cannot be empty!");
+          // 前端手机号格式校验（与后端保持一致的中国大陆手机规则，可适当放宽为 11 位 1 开头）
+          const phone = (this.form.phone || '').trim();
+          const CN_PHONE = /^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/;
+          if (!phone) {
+            this.$message.error("Phone number cannot be empty!");
             return;
           }
-          // 发送验证码
-          axios.post("/user/code?phone=" + this.form.phone)
-            .then(() => { })
+          if (!CN_PHONE.test(phone)) {
+            this.$message.error("手机号格式错误!");
+            return; // 不发送请求，也不触发倒计时
+          }
+          // 发送验证码，仅在成功时启动倒计时
+          axios.post("/user/code?phone=" + phone)
+            .then(() => {
+              // 禁用按钮并倒计时，仅成功后执行
+              this.disabled = true;
+              let i = 60;
+              this.codeBtnMsg = (i--) + 's to resend';
+              const taskId = setInterval(() => this.codeBtnMsg = (i--) + 's to resend', 1000);
+              setTimeout(() => {
+                this.disabled = false;
+                clearInterval(taskId);
+                this.codeBtnMsg = "Get Verification Code";
+              }, 59000);
+              this.$message.success("Verification code sent!");
+            })
             .catch(err => {
               console.log(err);
-              this.$message.error(err)
+              this.$message.error(err);
             });
-          // 禁用按钮
-          this.disabled = true;
-          // 按钮倒计时
-          let i = 60;
-          this.codeBtnMsg = (i--) + 's to resend'
-          let taskId = setInterval(() => this.codeBtnMsg = (i--) + 's to resend', 1000);
-          setTimeout(() => {
-            this.disabled = false;
-            clearInterval(taskId);
-            this.codeBtnMsg = "Get Verification Code";
-          }, 59000)
         }
       }
     })

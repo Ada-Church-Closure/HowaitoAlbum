@@ -19,6 +19,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.redis.RedisSystemException;
+import org.springframework.data.redis.connection.PoolException;
+import io.lettuce.core.RedisConnectionException;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -45,6 +49,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private RedissonClient redissonClient;
+    @Resource
+    private ApplicationContext applicationContext;
 
     // 提前加载lua脚本,避免I/O流
     private static final DefaultRedisScript<Long> SECKILL_SCRIPT;
@@ -60,7 +66,28 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
     @PostConstruct
     private void init(){
-        // 直接在这里提交任务
+        // 确保 Stream 及消费者组存在（等价于：XGROUP CREATE stream.orders g1 $ MKSTREAM）
+        final String queueName = "stream.orders";
+        try {
+            // 优先尝试按最新位置创建消费者组，若流不存在会抛错
+            stringRedisTemplate.opsForStream().createGroup(queueName, ReadOffset.latest(), "g1");
+        } catch (Exception e) {
+            try {
+                // 创建一个初始化条目以保证流存在
+                stringRedisTemplate.opsForStream().add(
+                        StreamRecords.mapBacked(Collections.singletonMap("init", "1")).withStreamKey(queueName)
+                );
+                // 再次创建消费者组
+                stringRedisTemplate.opsForStream().createGroup(queueName, ReadOffset.latest(), "g1");
+            } catch (Exception ignore) {
+                // BUSYGROUP 或已存在时忽略
+            }
+        }
+
+        // 通过 Spring 容器拿到当前 Service 的 AOP 代理，避免在异步线程中拿不到 AopContext
+        this.proxy = applicationContext.getBean(IVoucherOrderService.class);
+
+        // 提交异步消费任务
         SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
     }
 
@@ -97,8 +124,14 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     // 4.处理完毕,返回ACK确认消息
                     stringRedisTemplate.opsForStream().acknowledge(queueName, "g1", record.getId());
                 } catch (Exception e) {
-                    // 到这里,证明消息出现异常,消息会放入pending list,我们要处理pending list内部的出现异常的消息
-                    log.error("处理订单出现异常!!!", e);
+                    // 如果是 Redis 连接类异常，说明 Redis 暂不可用，短暂休眠后重试，避免重复打 pending-list
+                    if (isRedisUnavailable(e)){
+                        log.warn("Redis 暂不可用，准备重试消费 stream: {}", e.getMessage());
+                        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+                        continue;
+                    }
+                    // 其他异常：尝试处理 pending-list 中的疑难消息
+                    log.error("处理订单出现异常，转检索 pending-list", e);
                     handlePendingList();
                 }
             }
@@ -132,16 +165,30 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     // 4.处理完毕,返回ACK确认消息
                     stringRedisTemplate.opsForStream().acknowledge(queueName, "g1", record.getId());
                 } catch (Exception e) {
-                    // 到这里,证明消息出现异常,消息会放入pending list,我们要处理pending list内部的出现异常的消息
-                    log.error("处理pending list消息出现异常!!!", e);
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
+                    // Redis 不可用的场景，直接退出 pending 处理，交由主循环稍后重试
+                    if (isRedisUnavailable(e)){
+                        log.warn("Redis 暂不可用，暂停处理 pending-list: {}", e.getMessage());
+                        try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+                        return;
                     }
+                    // 非连接问题，短暂休眠后继续尝试
+                    log.error("处理 pending-list 消息出现异常!!!", e);
+                    try { Thread.sleep(50); } catch (InterruptedException ex) { throw new RuntimeException(ex); }
                 }
             }
         }
+    }
+
+    // 判定是否为 Redis 连接类异常（Lettuce/Spring Data Redis/连接池）
+    private boolean isRedisUnavailable(Throwable e){
+        Throwable t = e;
+        while (t != null){
+            if (t instanceof RedisConnectionException || t instanceof RedisSystemException || t instanceof PoolException){
+                return true;
+            }
+            t = t.getCause();
+        }
+        return false;
     }
 
 
@@ -180,7 +227,10 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             return;
         }
         try {
-            // 获取代理的对象/事务
+            // 通过代理对象调用，确保 @Transactional 生效
+            if (proxy == null) {
+                proxy = applicationContext.getBean(IVoucherOrderService.class);
+            }
             proxy.createVoucherOrder(voucherOrder);
         } catch (IllegalStateException e) {
             throw new RuntimeException(e);

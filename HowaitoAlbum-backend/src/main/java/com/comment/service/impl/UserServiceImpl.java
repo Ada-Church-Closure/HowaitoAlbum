@@ -90,38 +90,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             // 2.不合法,返回一个错误信息
             return Result.fail("手机号格式错误!");
         }
-        // 2.校验验证码
-        // Object cacheCode = session.getAttribute("code");
-        String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + phone);
-        String code = loginForm.getCode();
-        if(cacheCode == null || !cacheCode.equals(code)){
-            return Result.fail("验证码错误!");
-        }
-        // 3.Mybatis plus查询,单表很方便
-        User user = query().eq("phone", phone).one();
 
-        // 4.判断这个用户是否存在,不存在就创建一个用户
-        if(user == null){
-            user = createUserWithPhone(phone);
+        // 2.若携带密码，走密码登录；否则走短信验证码登录
+        String rawPassword = loginForm.getPassword();
+        User user;
+        if (cn.hutool.core.util.StrUtil.isNotBlank(rawPassword)) {
+            // 密码登录
+            user = query().eq("phone", phone).one();
+            if (user == null) {
+                return Result.fail("手机号未注册");
+            }
+            if (cn.hutool.core.util.StrUtil.isBlank(user.getPassword()) || !com.comment.utils.PasswordEncoder.matches(user.getPassword(), rawPassword)) {
+                return Result.fail("账号或密码错误");
+            }
+        } else {
+            // 短信验证码登录
+            String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + phone);
+            String code = loginForm.getCode();
+            if(cacheCode == null || !cacheCode.equals(code)){
+                return Result.fail("验证码错误!");
+            }
+            // 查询用户，不存在则注册
+            user = query().eq("phone", phone).one();
+            if(user == null){
+                user = createUserWithPhone(phone);
+            }
         }
 
-        // 随机生成token来作为登陆令牌
+        // 3.生成token写入Redis
         String token = UUID.randomUUID().toString();
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
 
-        // 把要存储的对象转成map再进行存储
-        // stringRedisTemplate只要string的值
-        // 我们可以编辑对象字段的属性.
-        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(), CopyOptions.create().setIgnoreNullValue(true).setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
+        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
+                CopyOptions.create()
+                        .setIgnoreNullValue(true)
+                        .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString())
+        );
 
-        // 把这个登陆的信息存放到redis内部
         String tokenKey = LOGIN_USER_KEY + token;
         stringRedisTemplate.opsForHash().putAll(tokenKey, userMap);
-        // 这个登陆也设置有效期,30min
         stringRedisTemplate.expire(tokenKey, LOGIN_USER_TTL, TimeUnit.MINUTES);
-
-        // 6.返回
-        // 注意,用户login了之后,我们要返回token.
         return Result.ok(token);
     }
 

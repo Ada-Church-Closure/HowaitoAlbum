@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import static com.comment.utils.RedisConstants.LOGIN_USER_KEY;
 
@@ -73,6 +74,26 @@ public class UserController {
 
         stringRedisTemplate.delete(LOGIN_USER_KEY + token);
         return Result.ok("退出登陆成功,まだ会えたいね！");
+    }
+
+    /**
+     * 设置/修改登录密码（需要已登录）
+     */
+    @PostMapping("/password")
+    public Result setPassword(@RequestBody Map<String, String> body){
+        // 校验登录状态
+        UserDTO cur = UserHolder.getUser();
+        if (cur == null){
+            return Result.fail("请先登录");
+        }
+        String newPwd = body.get("password");
+        if (StrUtil.isBlank(newPwd) || newPwd.length() < 4){
+            return Result.fail("密码格式不正确");
+        }
+        // 加密并保存
+        String encoded = com.comment.utils.PasswordEncoder.encode(newPwd);
+        boolean ok = userService.update().set("password", encoded).eq("id", cur.getId()).update();
+        return ok ? Result.ok() : Result.fail("修改失败");
     }
 
     @GetMapping("/me")
